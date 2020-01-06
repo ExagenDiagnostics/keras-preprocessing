@@ -17,6 +17,11 @@ except ImportError:
     pil_image = None
     ImageEnhance = None
 
+try:
+    from skimage import io
+except ImportError:
+    skimage = None
+
 
 if pil_image is not None:
     _PIL_INTERPOLATION_METHODS = {
@@ -110,8 +115,8 @@ def load_img(path, grayscale=False, color_mode='rgb', target_size=None,
     if pil_image is None:
         raise ImportError('Could not import PIL.Image. '
                           'The use of `load_img` requires PIL.')
-    with open(path, 'rb') as f:
-        img = pil_image.open(io.BytesIO(f.read()))
+    with io.imread(path) as f:
+        img = img_to_array(f)
         if color_mode == 'grayscale':
             # if image is not already an 8-bit, 16-bit or 32-bit grayscale image
             # convert it to an 8-bit grayscale image.
